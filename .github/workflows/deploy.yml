@@ -7,6 +7,25 @@ on:
 
 permissions:
   contents: read
+        uses: actions/configure-pages@v4
+      
+      - name: Clean symlinks
+        run: |
+          find . -type l -delete
+          find . -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true
+          find . -name ".github" -type d -exec rm -rf {} + 2>/dev/null || true
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
   pages: write
   id-token: write
 
@@ -15,31 +34,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          filter: blob:none
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
+      - name: Fix symlinks
+        run: |
+          find . -type l -delete
+          find . -name ".git" -prune -o -name ".github" -prune -o -type f -print
+      
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages
-          path: |
-            *.html
-            devices/
-            profile/
-            rosy/
-            whyred/
-            sagit/
-            laurus/
-            laurel_sprout/
-            README.md
-            LICENSE
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
+          name:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
