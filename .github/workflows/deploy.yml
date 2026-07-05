@@ -14,10 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
       - name: Build
         run: |
-          # Build command Anda di sini
-          # Contoh: npm run build, python -m http.server, dll
+          mkdir -p dist
+          cp -r . dist/
+          rm -rf dist/.git dist/.github
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -34,4 +39,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 
+        uses: actions/deploy-pages@v4
